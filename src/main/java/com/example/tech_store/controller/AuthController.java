@@ -4,11 +4,16 @@ import com.example.tech_store.DTO.request.LoginRequestDTO;
 import com.example.tech_store.DTO.request.RegisterRequestDTO;
 import com.example.tech_store.DTO.response.UserResponseDTO;
 import com.example.tech_store.services.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -31,6 +36,11 @@ public class AuthController {
             UserResponseDTO userResponseDTO = authService.login(loginInfo);
             return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
 
+    }
+
+    @GetMapping("/oauth2/login")
+    public String redirectToGoogleLogin(HttpServletResponse response) throws IOException {
+         return "http://localhost:8080/oauth2/authorization/google";
     }
 
     @GetMapping("/refresh-token")

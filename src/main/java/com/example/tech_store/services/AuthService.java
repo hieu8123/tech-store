@@ -10,6 +10,7 @@ import com.example.tech_store.repository.RefreshTokenRepository;
 import com.example.tech_store.utils.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
@@ -40,6 +41,7 @@ public class AuthService {
         }
     }
 
+
     // 📌 Đăng nhập -> Trả về accessToken & refreshToken
     public UserResponseDTO login(LoginRequestDTO loginInfo) {
         Optional<User> optionalUser = userRepository.findByEmail(loginInfo.getEmail());
@@ -55,6 +57,19 @@ public class AuthService {
             throw new RuntimeException("Invalid credentials!");
         }
         // Tạo và lưu token
+        return generateAndSaveTokens(user);
+    }
+
+    public UserResponseDTO oauth2Login(String email) {
+        // Kiểm tra user trong DB
+        User user = userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setEmail(email);
+                    newUser.setRole("USER");
+                    return userRepository.save(newUser);
+                });
+
         return generateAndSaveTokens(user);
     }
 

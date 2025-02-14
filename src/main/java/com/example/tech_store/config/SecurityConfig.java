@@ -1,6 +1,8 @@
 package com.example.tech_store.config;
 
 import com.example.tech_store.repository.UserRepository;
+import com.example.tech_store.security.CustomOAuth2UserService;
+import com.example.tech_store.security.OAuth2SuccessHandler;
 import com.example.tech_store.utils.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,10 +27,16 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    public SecurityConfig(JwtUtil jwtUtil, UserRepository userRepository) {
+    public SecurityConfig(JwtUtil jwtUtil, UserRepository userRepository,
+                          CustomOAuth2UserService customOAuth2UserService,
+                          OAuth2SuccessHandler oAuth2SuccessHandler) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
 
     @Bean
@@ -59,6 +67,12 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2SuccessHandler)
+                )
                 .addFilterBefore(jwtFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
