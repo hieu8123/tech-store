@@ -1,0 +1,36 @@
+# MySQL Configuration
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/jwt_db
+    username: user
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+#  task:
+#    scheduling:
+#      pool:
+#        size: 2
+
+# JWT Configuration
+jwt:
+  secret: 2a3d5f6g8h9j0kL1m2n3p4q5s6t7v8wX
+  expiration: 3600000    # 1 giờ
+  refresh_expiration: 86400000    # 1 ngày
+#springdoc:
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
+#    path: /swagger-ui.html
