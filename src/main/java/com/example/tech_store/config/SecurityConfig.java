@@ -1,5 +1,6 @@
 package com.example.tech_store.config;
 
+import com.example.tech_store.constants.SecurityConstants;
 import com.example.tech_store.repository.UserRepository;
 import com.example.tech_store.security.CustomOAuth2UserService;
 import com.example.tech_store.security.OAuth2SuccessHandler;

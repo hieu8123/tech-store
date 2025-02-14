@@ -1,18 +1,13 @@
 package com.example.tech_store.config;
 
-import com.example.tech_store.exception.ForbiddenException;
-import com.example.tech_store.exception.UnauthorizedException;
 import com.example.tech_store.model.User;
 import com.example.tech_store.repository.UserRepository;
 import com.example.tech_store.utils.JwtUtil;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +32,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         User user =  userRepository.findById(userId).orElse(null);
         // Trả về đối tượng Authentication đã được xác thực chứa thông tin user và quyền hạn của user
 
+        assert user != null;
         List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
 
         // Trả về đối tượng Authentication đã được xác thực chứa thông tin user, token và authorities.

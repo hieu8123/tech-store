@@ -10,7 +10,6 @@ import com.example.tech_store.repository.RefreshTokenRepository;
 import com.example.tech_store.utils.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import java.util.*;
 

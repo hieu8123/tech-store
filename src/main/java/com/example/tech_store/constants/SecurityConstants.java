@@ -1,4 +1,4 @@
-package com.example.tech_store.config;
+package com.example.tech_store.constants;
 
 import java.util.List;
 import java.util.Arrays;

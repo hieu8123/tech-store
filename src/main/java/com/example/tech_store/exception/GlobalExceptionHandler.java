@@ -6,8 +6,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.ConstraintViolationException;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -76,13 +74,13 @@ public class GlobalExceptionHandler {
                     content = {@Content(mediaType = APPLICATION_JSON_VALUE,
                             examples = @ExampleObject(name = "401 Response", value = """
                             {
-                              "timestamp": "2023-10-19T06:07:35.321+00:00", 
+                              "timestamp": "2023-10-19T06:07:35.321+00:00",\s
                               "status": 401,
                               "path": "/api/v1/...",
                               "error": "Unauthorized",
                               "message": "Invalid or expired token"
                             }
-                            """
+                           \s"""
                             ))})
     })
     public ErrorResponse handleUnauthorizedException(Exception e, WebRequest request) {
@@ -98,12 +96,12 @@ public class GlobalExceptionHandler {
                             examples = @ExampleObject(name = "403 Response", value = """
                             {
                               "timestamp": "2023-10-19T06:07:35.321+00:00",
-                              "status": 403, 
+                              "status": 403,\s
                               "path": "/api/v1/...",
                               "error": "Forbidden",
                               "message": "Access Denied: You don't have permission to access this resource"
                             }
-                            """
+                           \s"""
                             ))})
     })
     public ErrorResponse handleAccessDeniedException(AccessDeniedException e, WebRequest request) {

@@ -4,11 +4,11 @@ import com.example.tech_store.DTO.response.ErrorResponse;
 import com.example.tech_store.exception.UnauthorizedException;
 import com.example.tech_store.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.Column;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain chain)
             throws ServletException, IOException {
         try {
             String token = extractAndValidateToken(request);
