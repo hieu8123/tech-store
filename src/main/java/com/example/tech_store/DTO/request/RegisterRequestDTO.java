@@ -1,38 +1,47 @@
 package com.example.tech_store.DTO.request;
 
+import com.example.tech_store.enums.Role;
 import com.example.tech_store.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterRequestDTO {
-    @NotBlank(message = "email is blank")
-    @Email(message = "email is not valid")
+
+    @NotBlank(message = "Email is blank")
+    @Email(message = "Email is not valid")
     private String email;
 
-    @NotBlank(message = "username is blank")
+    @NotBlank(message = "Username is blank")
     private String username;
 
-    @NotBlank(message = "password is blank")
+    @NotBlank(message = "Password is blank")
     private String password;
-    private String role;
+
+    private Role role;
 
     public User toUser() {
-        User user = new User();
-        user.setEmail(email);
-        user.setUsername(this.username);
-        user.setPassword(this.password);
-        user.setRole(this.role);
-        return user;
+        return User.builder()
+                .email(email)
+                .username(username)
+                .password(password)
+                .role(role)
+                .build();
     }
 
-    // Chuyển đổi từ User entity sang RegisterDTO
     public static RegisterRequestDTO fromUser(User user) {
-        return new RegisterRequestDTO(user.getEmail(),user.getUsername(), user.getPassword(), user.getRole());
+        return RegisterRequestDTO.builder()
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .build();
     }
 }

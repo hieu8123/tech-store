@@ -1,5 +1,6 @@
 package com.example.tech_store.model;
 
+import com.example.tech_store.enums.BannerStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,24 +9,29 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "refresh_tokens")
-public class RefreshToken {
+@Table(name = "banners")
+public class Banner {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    private String image;
+    private String name;
 
-    @Column(nullable = false, unique = true, length = 512)
-    private String token;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BannerStatus status = BannerStatus.INACTIVE;
+
+    @OneToOne
+    @JoinColumn(name = "product_id", unique = true)
+    private Product product;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -33,3 +39,4 @@ public class RefreshToken {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
+

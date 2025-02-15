@@ -32,10 +32,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         User user =  userRepository.findById(userId).orElse(null);
         // Trả về đối tượng Authentication đã được xác thực chứa thông tin user và quyền hạn của user
 
-        assert user != null;
-        List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
 
-        // Trả về đối tượng Authentication đã được xác thực chứa thông tin user, token và authorities.
+        assert user != null;
+        List<SimpleGrantedAuthority> authorities = Collections.singletonList(
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
         return new UsernamePasswordAuthenticationToken(user, token, authorities);
     }
 

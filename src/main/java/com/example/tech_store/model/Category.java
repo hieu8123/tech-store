@@ -13,19 +13,17 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "refresh_tokens")
-public class RefreshToken {
+@Table(name = "categories")
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
+    @Column(nullable = false)
+    private String name;
 
-    @Column(nullable = false, unique = true, length = 512)
-    private String token;
+    private String image;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -33,3 +31,4 @@ public class RefreshToken {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
+

@@ -24,13 +24,13 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class GlobalExceptionHandler {
 
     private ErrorResponse createErrorResponse(Exception e, WebRequest request, int status, String error, String message) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamp(new Date());
-        errorResponse.setStatus(status);
-        errorResponse.setPath(request.getDescription(false).replace("uri=", ""));
-        errorResponse.setError(error);
-        errorResponse.setMessage(message);
-        return errorResponse;
+        return ErrorResponse.builder()
+                .timestamp(new Date())
+                .status(status)
+                .path(request.getDescription(false).replace("uri=", ""))
+                .error(error)
+                .message(message)
+                .build();
     }
 
     private String extractMessageFromException(Exception e) {

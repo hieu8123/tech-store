@@ -3,6 +3,7 @@ package com.example.tech_store.services;
 import com.example.tech_store.DTO.request.LoginRequestDTO;
 import com.example.tech_store.DTO.request.RegisterRequestDTO;
 import com.example.tech_store.DTO.response.UserResponseDTO;
+import com.example.tech_store.enums.Role;
 import com.example.tech_store.model.User;
 import com.example.tech_store.model.RefreshToken;
 import com.example.tech_store.repository.UserRepository;
@@ -65,7 +66,7 @@ public class AuthService {
                 .orElseGet(() -> {
                     User newUser = new User();
                     newUser.setEmail(email);
-                    newUser.setRole("USER");
+                    newUser.setRole(Role.USER);
                     return userRepository.save(newUser);
                 });
 

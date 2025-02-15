@@ -1,11 +1,13 @@
 package com.example.tech_store.security;
 
+import com.example.tech_store.enums.Role;
 import com.example.tech_store.model.User;
 import com.example.tech_store.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -26,10 +28,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Optional<User> existingUser = userRepository.findByEmail(email);
 
         if (existingUser.isEmpty()) {
-            User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setUsername(oAuth2User.getAttribute("name"));
-            newUser.setRole("USER");
+            User newUser = User.builder()
+                    .email(email)
+                    .username(oAuth2User.getAttribute("name"))
+                    .role(Role.USER)
+                    .build();
             userRepository.save(newUser);
         }
 

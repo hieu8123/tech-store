@@ -4,28 +4,34 @@ import com.example.tech_store.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginRequestDTO {
-    @NotBlank(message = "email is blank")
-    @Email(message = "email is not valid")
+
+    @NotBlank(message = "Email is blank")
+    @Email(message = "Email is not valid")
     private String email;
 
+    @NotBlank(message = "Password is blank")
     private String password;
 
     public User toUser() {
-        User user = new User();
-        user.setUsername(this.email);
-        user.setPassword(this.password);
-        return user;
+        return User.builder()
+                .email(email)
+                .password(password)
+                .build();
     }
 
     public static LoginRequestDTO fromUser(User user) {
-        return new LoginRequestDTO(user.getUsername(), user.getPassword());
+        return LoginRequestDTO.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .build();
     }
 }
-
