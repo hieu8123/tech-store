@@ -2,7 +2,10 @@ package com.example.tech_store.model;
 
 import com.example.tech_store.enums.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -42,7 +45,7 @@ public class User {
     private RefreshToken refreshToken;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)  // Chỉ định Kiểu lưu trong database
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
     @UpdateTimestamp

@@ -5,16 +5,16 @@ import com.example.tech_store.DTO.request.RegisterRequestDTO;
 import com.example.tech_store.DTO.response.UserResponseDTO;
 import com.example.tech_store.enums.Role;
 import com.example.tech_store.exception.InvalidDataException;
-import com.example.tech_store.model.User;
 import com.example.tech_store.model.RefreshToken;
-import com.example.tech_store.repository.UserRepository;
+import com.example.tech_store.model.User;
 import com.example.tech_store.repository.RefreshTokenRepository;
+import com.example.tech_store.repository.UserRepository;
 import com.example.tech_store.utils.JwtUtil;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {

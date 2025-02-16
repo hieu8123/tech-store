@@ -6,14 +6,12 @@ import com.example.tech_store.DTO.response.ApiResponseDTO;
 import com.example.tech_store.DTO.response.UserResponseDTO;
 import com.example.tech_store.exception.UnauthorizedException;
 import com.example.tech_store.services.AuthService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.Date;
 
 @RestController
@@ -54,7 +52,7 @@ public class AuthController {
     }
 
     @GetMapping("/oauth2/login")
-    public ResponseEntity<ApiResponseDTO<String>> redirectToGoogleLogin(HttpServletResponse response) throws IOException {
+    public ResponseEntity<ApiResponseDTO<String>> redirectToGoogleLogin() {
         String loginUrl = "http://localhost:8080/oauth2/authorization/google";
         ApiResponseDTO<String> responseDTO = ApiResponseDTO.<String>builder()
                 .status(HttpStatus.OK.value())
