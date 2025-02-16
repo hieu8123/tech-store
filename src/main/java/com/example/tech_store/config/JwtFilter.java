@@ -1,6 +1,6 @@
 package com.example.tech_store.config;
 
-import com.example.tech_store.DTO.response.ErrorResponse;
+import com.example.tech_store.DTO.response.ErrorResponseDTO;
 import com.example.tech_store.exception.UnauthorizedException;
 import com.example.tech_store.utils.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
 
         } catch (AuthenticationException ex) {
-            ErrorResponse errorResponse = new ErrorResponse();
+            ErrorResponseDTO errorResponse = new ErrorResponseDTO();
             errorResponse.setTimestamp(new Date());
             errorResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             errorResponse.setError("Unauthorized");

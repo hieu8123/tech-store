@@ -1,6 +1,6 @@
 package com.example.tech_store.exception;
 
-import com.example.tech_store.DTO.response.ErrorResponse;
+import com.example.tech_store.DTO.response.ErrorResponseDTO;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,8 +23,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private ErrorResponse createErrorResponse(Exception e, WebRequest request, int status, String error, String message) {
-        return ErrorResponse.builder()
+    private ErrorResponseDTO createErrorResponse(Exception e, WebRequest request, int status, String error, String message) {
+        return ErrorResponseDTO.builder()
                 .timestamp(new Date())
                 .status(status)
                 .path(request.getDescription(false).replace("uri=", ""))
@@ -61,7 +61,7 @@ public class GlobalExceptionHandler {
                                     """
                             ))})
     })
-    public ErrorResponse handleValidationException(Exception e, WebRequest request) {
+    public ErrorResponseDTO handleValidationException(Exception e, WebRequest request) {
         String message = extractMessageFromException(e);
         String error = e instanceof MethodArgumentNotValidException ? "Invalid Payload" : "Invalid Parameter";
         return createErrorResponse(e, request, BAD_REQUEST.value(), error, message);
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
                            \s"""
                             ))})
     })
-    public ErrorResponse handleUnauthorizedException(Exception e, WebRequest request) {
+    public ErrorResponseDTO handleUnauthorizedException(Exception e, WebRequest request) {
         return createErrorResponse(e, request, UNAUTHORIZED.value(),
                 UNAUTHORIZED.getReasonPhrase(), e.getMessage());
     }
@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
                            \s"""
                             ))})
     })
-    public ErrorResponse handleAccessDeniedException(AccessDeniedException e, WebRequest request) {
+    public ErrorResponseDTO handleAccessDeniedException(AccessDeniedException e, WebRequest request) {
         return createErrorResponse(e, request, FORBIDDEN.value(),
                 FORBIDDEN.getReasonPhrase(), e.getMessage());
     }
@@ -125,7 +125,7 @@ public class GlobalExceptionHandler {
                                     """
                             ))})
     })
-    public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
+    public ErrorResponseDTO handleResourceNotFoundException(ResourceNotFoundException e, WebRequest request) {
         return createErrorResponse(e, request, NOT_FOUND.value(), NOT_FOUND.getReasonPhrase(), e.getMessage());
     }
 
@@ -145,7 +145,7 @@ public class GlobalExceptionHandler {
                                     """
                             ))})
     })
-    public ErrorResponse handleDuplicateKeyException(InvalidDataException e, WebRequest request) {
+    public ErrorResponseDTO handleDuplicateKeyException(InvalidDataException e, WebRequest request) {
         return createErrorResponse(e, request, CONFLICT.value(), CONFLICT.getReasonPhrase(), e.getMessage());
     }
 
@@ -165,7 +165,7 @@ public class GlobalExceptionHandler {
                                     """
                             ))})
     })
-    public ErrorResponse handleException(Exception e, WebRequest request) {
+    public ErrorResponseDTO handleException(Exception e, WebRequest request) {
         return createErrorResponse(e, request, INTERNAL_SERVER_ERROR.value(), INTERNAL_SERVER_ERROR.getReasonPhrase(), e.getMessage());
     }
 }

@@ -1,7 +1,7 @@
 package com.example.tech_store.DTO.request;
 
-import com.example.tech_store.enums.Role;
 import com.example.tech_store.model.User;
+import com.example.tech_store.validation.StrongPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -23,16 +23,15 @@ public class RegisterRequestDTO {
     private String username;
 
     @NotBlank(message = "Password is blank")
+    @StrongPassword
     private String password;
 
-    private Role role;
 
     public User toUser() {
         return User.builder()
                 .email(email)
                 .username(username)
                 .password(password)
-                .role(role)
                 .build();
     }
 
@@ -41,7 +40,6 @@ public class RegisterRequestDTO {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .role(user.getRole())
                 .build();
     }
 }

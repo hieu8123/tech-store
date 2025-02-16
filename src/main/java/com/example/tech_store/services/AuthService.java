@@ -4,6 +4,7 @@ import com.example.tech_store.DTO.request.LoginRequestDTO;
 import com.example.tech_store.DTO.request.RegisterRequestDTO;
 import com.example.tech_store.DTO.response.UserResponseDTO;
 import com.example.tech_store.enums.Role;
+import com.example.tech_store.exception.InvalidDataException;
 import com.example.tech_store.model.User;
 import com.example.tech_store.model.RefreshToken;
 import com.example.tech_store.repository.UserRepository;
@@ -12,6 +13,7 @@ import com.example.tech_store.utils.JwtUtil;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 
 @Service
@@ -21,47 +23,51 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BloomFilterService bloomFilterService;
 
-    public AuthService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil, RedisTemplate<String, String> redisTemplate) {
+    public AuthService(UserRepository userRepository,
+                       RefreshTokenRepository refreshTokenRepository,
+                       JwtUtil jwtUtil,
+                       BloomFilterService bloomFilterService) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtUtil = jwtUtil;
+        this.bloomFilterService = bloomFilterService;
     }
 
     // 📌 Đăng ký tài khoản
     public UserResponseDTO register(RegisterRequestDTO registerInfo) {
         try {
             registerInfo.setPassword(passwordEncoder.encode(registerInfo.getPassword()));
-            User user = registerInfo.toUser();
-            userRepository.save(user);
-            // Tạo và lưu token
-            return generateAndSaveTokens(user);
+            if(!bloomFilterService.mightContain(registerInfo.getEmail())) {
+                User user = registerInfo.toUser();
+                userRepository.save(user);
+                return generateAndSaveTokens(user);
+            }
+            throw new InvalidDataException("Error registering user:Email already exists");
         } catch (Exception e) {
             throw new RuntimeException("Error registering user: " + e.getMessage());
         }
     }
 
-
-    // 📌 Đăng nhập -> Trả về accessToken & refreshToken
     public UserResponseDTO login(LoginRequestDTO loginInfo) {
-        Optional<User> optionalUser = userRepository.findByEmail(loginInfo.getEmail());
 
-        // Kiểm tra xem người dùng có tồn tại không
+        if(!bloomFilterService.mightContain(loginInfo.getEmail())) {
+            throw new InvalidDataException("Email does not exist");
+        }
+        Optional<User> optionalUser = userRepository.findByEmail(loginInfo.getEmail());
         if (optionalUser.isEmpty()) {
             throw new RuntimeException("User not found!");
         }
 
-        User user = optionalUser.get(); // Lấy User từ Optional
-        // Kiểm tra mật khẩu
+        User user = optionalUser.get();
         if (!passwordEncoder.matches(loginInfo.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials!");
         }
-        // Tạo và lưu token
         return generateAndSaveTokens(user);
     }
 
     public UserResponseDTO oauth2Login(String email) {
-        // Kiểm tra user trong DB
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
                     User newUser = new User();
@@ -73,7 +79,6 @@ public class AuthService {
         return generateAndSaveTokens(user);
     }
 
-    // 📌 Làm mới Access Token
     public String refreshToken(String refreshToken) {
         Optional<RefreshToken> storedToken = refreshTokenRepository.findByToken(refreshToken);
         if (storedToken.isEmpty() || jwtUtil.isTokenExpired(storedToken.get().getToken())) {
@@ -83,36 +88,40 @@ public class AuthService {
         return jwtUtil.generateToken(userId, false);
     }
 
-    // 📌 Đăng xuất -> Xóa Refresh Token khỏi DB
-    public void logout(String refreshToken) {
-        refreshTokenRepository.deleteByToken(refreshToken);
+    public void logout(String accessToken) {
+        UUID userId = jwtUtil.extractUserId(accessToken);
+        User user = userRepository.findById(userId).orElse(null);
+        if(user != null) {
+            if(user.getRefreshToken() != null) {
+                user.setRefreshToken(null);
+            }
+            jwtUtil.blacklistToken(accessToken);
+        }
+
     }
 
-    // Phương thức dùng chung để tạo và lưu token
     private UserResponseDTO generateAndSaveTokens(User user) {
-        // Tạo token
         String accessToken = jwtUtil.generateToken(user.getId(), false);
-        String refreshToken = jwtUtil.generateToken(user.getId(), true);
 
-        // Lưu token vào DB và Redis
-        saveToken(user, accessToken, refreshToken);
+        String refreshToken = refreshTokenRepository.findByUserId(user.getId())
+                .map(RefreshToken::getToken)
+                .orElseGet(() -> {
+                    String newRefreshToken = jwtUtil.generateToken(user.getId(), true);
+                    RefreshToken newToken = RefreshToken.builder()
+                            .user(user)
+                            .token(newRefreshToken)
+                            .build();
+                    refreshTokenRepository.save(newToken);
+                    return newRefreshToken;
+                });
 
-        // Chuyển đổi thành UserResponseDTO
-        UserResponseDTO userResponseDTO = UserResponseDTO.fromUser(user);
+        jwtUtil.saveTokenToRedis(accessToken, user.getId());
+
+        UserResponseDTO userResponseDTO= UserResponseDTO.fromUser(user);
         userResponseDTO.setToken(accessToken);
         userResponseDTO.setRefreshToken(refreshToken);
-
         return userResponseDTO;
     }
 
-    // Phương thức lưu token vào DB và Redis
-    private void saveToken(User user, String accessToken, String refreshToken) {
-        RefreshToken refresh = new RefreshToken();
-        refresh.setToken(refreshToken);
-        refresh.setUser(user); // Lưu user trực tiếp thay vì optional
-        refreshTokenRepository.save(refresh);
-        // Lưu token vào Redis
-        jwtUtil.saveTokenToRedis(accessToken, user.getId());
-    }
 }
 

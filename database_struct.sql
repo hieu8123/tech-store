@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
                                      id BINARY(16) PRIMARY KEY,
                                      email VARCHAR(255) UNIQUE NOT NULL,
                                      username VARCHAR(255),
-                                     password VARCHAR(255) NOT NULL,
+                                     password VARCHAR(255) ,
                                      phone_number VARCHAR(20) UNIQUE,
                                      avatar TEXT,
                                      role VARCHAR(50) NOT NULL DEFAULT 'USER',
