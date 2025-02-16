@@ -23,7 +23,7 @@ import java.util.UUID;
                 @Index(name = "idx_old_price", columnList = "oldPrice"),
                 @Index(name = "idx_brand", columnList = "brand_id"),
                 @Index(name = "idx_category", columnList = "category_id"),
-                @Index(name = "idx_created_at", columnList = "createdAt")
+                @Index(name = "idx_created_at", columnList = "created_at")
         })
 public class Product {
     @Id

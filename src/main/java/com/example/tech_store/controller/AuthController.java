@@ -6,6 +6,7 @@ import com.example.tech_store.DTO.response.ApiResponseDTO;
 import com.example.tech_store.DTO.response.UserResponseDTO;
 import com.example.tech_store.exception.UnauthorizedException;
 import com.example.tech_store.services.AuthService;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponseDTO<Void>> logout(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<ApiResponseDTO<Void>> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             throw new UnauthorizedException("Invalid token");
         }
