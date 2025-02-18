@@ -11,6 +11,8 @@ DROP TABLE IF EXISTS brands;
 DROP TABLE IF EXISTS addresses;
 DROP TABLE IF EXISTS refresh_tokens;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS cart;
+DROP TABLE IF EXISTS cart_items;
 
 CREATE TABLE IF NOT EXISTS users (
                                      id BINARY(16) PRIMARY KEY,
@@ -42,6 +44,22 @@ CREATE TABLE IF NOT EXISTS addresses (
                                          is_primary BOOLEAN NOT NULL DEFAULT FALSE,
                                          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS cart (
+                                    id BINARY(16) PRIMARY KEY,
+                                    user_id BINARY(16) UNIQUE NOT NULL,
+                                    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS cart_items (
+                                          id BINARY(16) PRIMARY KEY,
+                                          cart_id BINARY(16) NOT NULL,
+                                          product_id BINARY(16) NOT NULL,
+                                          quantity INT NOT NULL DEFAULT 1,
+                                          created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                          updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS brands (
@@ -114,5 +132,8 @@ ALTER TABLE products ADD CONSTRAINT fk_products_brand FOREIGN KEY (brand_id) REF
 ALTER TABLE products ADD CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE;
 ALTER TABLE banners ADD CONSTRAINT fk_banners_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL;
 ALTER TABLE orders ADD CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE cart ADD CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+ALTER TABLE cart_items ADD CONSTRAINT fk_cart_items_cart FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE;
+ALTER TABLE cart_items ADD CONSTRAINT fk_cart_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
 ALTER TABLE order_details ADD CONSTRAINT fk_order_details_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
 ALTER TABLE order_details ADD CONSTRAINT fk_order_details_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;

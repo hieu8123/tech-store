@@ -4,6 +4,7 @@ import com.example.tech_store.DTO.request.LoginRequestDTO;
 import com.example.tech_store.DTO.request.RegisterRequestDTO;
 import com.example.tech_store.DTO.response.ApiResponseDTO;
 import com.example.tech_store.DTO.response.UserResponseDTO;
+import com.example.tech_store.constants.ApiConstants;
 import com.example.tech_store.exception.UnauthorizedException;
 import com.example.tech_store.services.AuthService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(ApiConstants.Endpoints.AUTH)
 @Validated
 public class AuthController {
     private final AuthService authService;

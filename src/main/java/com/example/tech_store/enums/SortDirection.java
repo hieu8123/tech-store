@@ -25,6 +25,6 @@ public enum SortDirection {
                 return sortDirection;
             }
         }
-        throw new IllegalArgumentException("Unexpected order status value: " + value);
+        throw new IllegalArgumentException("Unexpected sort direction value: " + value);
     }
 }

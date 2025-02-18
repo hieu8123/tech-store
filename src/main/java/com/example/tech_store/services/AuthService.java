@@ -85,7 +85,10 @@ public class AuthService {
             throw new RuntimeException("Invalid or expired refresh token!");
         }
         UUID userId = jwtUtil.extractUserId(storedToken.get().getToken());
-        return jwtUtil.generateToken(userId, false);
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        String accessToken =  jwtUtil.generateToken(user.getId(),user.getEmail(), false);
+        jwtUtil.saveTokenToRedis(accessToken, user.getId());
+        return accessToken;
     }
 
     public void logout(String accessToken) {
@@ -101,12 +104,12 @@ public class AuthService {
     }
 
     private UserResponseDTO generateAndSaveTokens(User user) {
-        String accessToken = jwtUtil.generateToken(user.getId(), false);
+        String accessToken = jwtUtil.generateToken(user.getId(),user.getEmail(), false);
 
         String refreshToken = refreshTokenRepository.findByUserId(user.getId())
                 .map(RefreshToken::getToken)
                 .orElseGet(() -> {
-                    String newRefreshToken = jwtUtil.generateToken(user.getId(), true);
+                    String newRefreshToken = jwtUtil.generateToken(user.getId(),user.getEmail(),true);
                     RefreshToken newToken = RefreshToken.builder()
                             .user(user)
                             .token(newRefreshToken)

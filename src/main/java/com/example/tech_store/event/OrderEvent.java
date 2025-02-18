@@ -1,9 +1,9 @@
 package com.example.tech_store.event;
 
-import com.example.tech_store.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
 import java.util.UUID;
 
 @Data

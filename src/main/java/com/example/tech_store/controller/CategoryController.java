@@ -4,6 +4,7 @@ import com.example.tech_store.DTO.request.CategoryRequestDTO;
 import com.example.tech_store.DTO.response.ApiResponseDTO;
 import com.example.tech_store.DTO.response.CategoryResponseDTO;
 import com.example.tech_store.DTO.response.PagedResponseDTO;
+import com.example.tech_store.constants.ApiConstants;
 import com.example.tech_store.enums.CategorySortField;
 import com.example.tech_store.enums.SortDirection;
 import com.example.tech_store.services.CategoryService;
@@ -23,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping(ApiConstants.Endpoints.CATEGORIES)
 public class CategoryController {
     private final CategoryService categoryService;
 

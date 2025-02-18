@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
                 UNAUTHORIZED.getReasonPhrase(), e.getMessage());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({ForbiddenException.class, AccessDeniedException.class})
     @ResponseStatus(FORBIDDEN)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "403", description = "Forbidden",

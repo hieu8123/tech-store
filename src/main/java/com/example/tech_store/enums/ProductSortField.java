@@ -26,6 +26,6 @@ public enum ProductSortField {
                 return productSortField;
             }
         }
-        throw new IllegalArgumentException("Unexpected order status value: " + value);
+        throw new IllegalArgumentException("Unexpected product sort field value: " + value);
     }
 }

@@ -41,10 +41,11 @@ public class JwtUtil {
     }
 
     // 📌 Sinh accessToken hoặc refreshToken
-    public String generateToken(UUID userId, boolean isRefreshToken) {
+    public String generateToken(UUID userId, String email, boolean isRefreshToken) {
         long expirationTime = isRefreshToken ? refreshExpiration : jwtExpiration;
         return Jwts.builder()
                 .setSubject(userId.toString())
+                .claim("email", email)  // Thêm email vào claim
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
@@ -56,6 +57,13 @@ public class JwtUtil {
         if (!isTokenValidFormat(token))
             throw new UnauthorizedException("Invalid token format");
         return UUID.fromString(extractClaim(token, Claims::getSubject));
+    }
+
+    public  String extractEmail(String token) {
+        if(!isTokenValidFormat(token)){
+            throw new UnauthorizedException("Invalid token format");
+        }
+        return extractClaim(token, claims -> claims.get("email", String.class));
     }
 
     // 📌 Kiểm tra định dạng token hợp lệ không

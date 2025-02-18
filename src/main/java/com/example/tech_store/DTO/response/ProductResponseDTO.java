@@ -20,6 +20,10 @@ public class ProductResponseDTO {
     private Integer price;
     private Integer oldPrice;
     private String[] imageList;
+    private UUID categoryId;
+    private String categoryName;
+    private UUID brandId;
+    private String brandName;
     private String description;
     private String specification;
     private Integer buyTurn = 0;
@@ -38,6 +42,10 @@ public class ProductResponseDTO {
                 .price(product.getPrice())
                 .oldPrice(product.getOldPrice())
                 .imageList(product.getImage().split(","))
+                .brandId(product.getBrand().getId())
+                .brandName(product.getBrand().getName())
+                .categoryId(product.getCategory().getId())
+                .categoryName(product.getCategory().getName())
                 .description(product.getDescription())
                 .specification(product.getSpecification())
                 .buyTurn(product.getBuyTurn())

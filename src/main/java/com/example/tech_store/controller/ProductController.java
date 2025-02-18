@@ -4,7 +4,7 @@ import com.example.tech_store.DTO.request.ProductRequestDTO;
 import com.example.tech_store.DTO.response.ApiResponseDTO;
 import com.example.tech_store.DTO.response.PagedResponseDTO;
 import com.example.tech_store.DTO.response.ProductResponseDTO;
-import com.example.tech_store.enums.CategorySortField;
+import com.example.tech_store.constants.ApiConstants;
 import com.example.tech_store.enums.ProductSortField;
 import com.example.tech_store.enums.SortDirection;
 import com.example.tech_store.services.ProductService;
@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping(ApiConstants.Endpoints.PRODUCTS)
 public class ProductController {
     private final ProductService productService;
 
