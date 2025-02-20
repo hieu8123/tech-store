@@ -35,7 +35,6 @@ public class AuthService {
         this.bloomFilterService = bloomFilterService;
     }
 
-    // 📌 Đăng ký tài khoản
     public UserResponseDTO register(RegisterRequestDTO registerInfo) {
         try {
             registerInfo.setPassword(passwordEncoder.encode(registerInfo.getPassword()));

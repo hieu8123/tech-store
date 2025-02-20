@@ -54,20 +54,20 @@ public class JwtUtil {
 
     // 📌 Trích xuất userId từ token
     public UUID extractUserId(String token) {
-        if (!isTokenValidFormat(token))
-            throw new UnauthorizedException("Invalid token format");
+        if (!isTokenValid(token))
+            throw new UnauthorizedException("Invalid token");
         return UUID.fromString(extractClaim(token, Claims::getSubject));
     }
 
     public  String extractEmail(String token) {
-        if(!isTokenValidFormat(token)){
-            throw new UnauthorizedException("Invalid token format");
+        if(!isTokenValid(token)){
+            throw new UnauthorizedException("Invalid token");
         }
         return extractClaim(token, claims -> claims.get("email", String.class));
     }
 
     // 📌 Kiểm tra định dạng token hợp lệ không
-    public boolean isTokenValidFormat(String token) {
+    public boolean isTokenValid(String token) {
         if (token == null || token.split("\\.").length != 3) {
             return false;
         }
@@ -101,7 +101,7 @@ public class JwtUtil {
 
     // 📌 Kiểm tra token hợp lệ với userId
     public boolean validateToken(String token, UUID userId) {
-        if (isTokenBlacklisted(token)) {
+        if (isTokenBlacklisted(token) || !isTokenValid(token)) {
             return false;
         }
         String tokenId = String.valueOf(extractClaim(token, Claims::getIssuedAt).getTime());
@@ -116,7 +116,7 @@ public class JwtUtil {
     }
 
     public void blacklistToken(String token) {
-        if (isTokenValidFormat(token)) {
+        if (isTokenValid(token)) {
             redisTemplate.opsForValue().set(BLACKLIST_PREFIX + token, "blacklisted", jwtExpiration, TimeUnit.MILLISECONDS);
         }
     }

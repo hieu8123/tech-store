@@ -2,14 +2,12 @@ package com.example.tech_store.controller;
 
 import com.example.tech_store.DTO.request.ProductRequestDTO;
 import com.example.tech_store.DTO.response.ApiResponseDTO;
-import com.example.tech_store.DTO.response.PagedResponseDTO;
+import com.example.tech_store.DTO.response.PagedDataDTO;
 import com.example.tech_store.DTO.response.ProductResponseDTO;
 import com.example.tech_store.constants.ApiConstants;
 import com.example.tech_store.enums.ProductSortField;
 import com.example.tech_store.enums.SortDirection;
 import com.example.tech_store.services.ProductService;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,27 +31,19 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponseDTO<PagedResponseDTO<ProductResponseDTO>>> getAllProducts(
+    public ResponseEntity<ApiResponseDTO<PagedDataDTO<ProductResponseDTO>>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<ProductResponseDTO> productPage = productService.filterProducts(null, null, null, null, null, pageable);
 
-        PagedResponseDTO<ProductResponseDTO> pagedResponse = PagedResponseDTO.<ProductResponseDTO>builder()
-                .content(productPage.getContent())
-                .page(productPage.getNumber())
-                .size(productPage.getSize())
-                .totalPages(productPage.getTotalPages())
-                .totalElements(productPage.getTotalElements())
-                .build();
-
-        ApiResponseDTO<PagedResponseDTO<ProductResponseDTO>> response = ApiResponseDTO.<PagedResponseDTO<ProductResponseDTO>>builder()
+        ApiResponseDTO<PagedDataDTO<ProductResponseDTO>> response = ApiResponseDTO.<PagedDataDTO<ProductResponseDTO>>builder()
                 .timestamp(new Date())
                 .success(true)
                 .status(HttpStatus.OK.value())
                 .message("Product list retrieved successfully")
-                .data(pagedResponse)
+                .data(new PagedDataDTO<>(productPage))
                 .build();
 
         return ResponseEntity.ok(response);
@@ -100,7 +90,6 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<ProductResponseDTO>> updateProduct(@PathVariable UUID id, @RequestBody ProductRequestDTO productDTO) {
         try {
-
             ProductResponseDTO responseDTO = productService.updateProduct(id, productDTO.toProduct());
 
             ApiResponseDTO<ProductResponseDTO> response = ApiResponseDTO.<ProductResponseDTO>builder()
@@ -151,7 +140,7 @@ public class ProductController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<ApiResponseDTO<PagedResponseDTO<ProductResponseDTO>>> filterProducts(
+    public ResponseEntity<ApiResponseDTO<PagedDataDTO<ProductResponseDTO>>> filterProducts(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
@@ -159,43 +148,23 @@ public class ProductController {
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int size,
-            @Parameter(description = "Sort by",
-                    schema = @Schema(
-                            allowableValues = {"NAME", "CREATEDAT", "ID", "PRICE"},
-                            defaultValue = "CREATEDAT"
-                    ))
             @RequestParam(defaultValue = "CREATEDAT") String sortBy,
-            @Parameter(description = "Sort direction",
-                    schema = @Schema(
-                            allowableValues = {"ASC", "DESC"},
-                            defaultValue = "ASC"
-                    ))
             @RequestParam(defaultValue = "ASC") String sortDirection
     ) {
         ProductSortField sortFieldEnum = ProductSortField.fromValue(sortBy);
         SortDirection sortDirectionEnum = SortDirection.fromValue(sortDirection);
-        String sortField = sortFieldEnum.getValue();
-
         Sort.Direction direction = sortDirectionEnum == SortDirection.ASC ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, sortField);
+        Sort sort = Sort.by(direction, sortFieldEnum.getValue());
 
         Pageable pageable = PageRequest.of(offset / size, size, sort);
         Page<ProductResponseDTO> productPage = productService.filterProducts(name, minPrice, maxPrice, brandId, categoryId, pageable);
 
-        PagedResponseDTO<ProductResponseDTO> pagedResponse = PagedResponseDTO.<ProductResponseDTO>builder()
-                .content(productPage.getContent())
-                .page(productPage.getNumber())
-                .size(productPage.getSize())
-                .totalPages(productPage.getTotalPages())
-                .totalElements(productPage.getTotalElements())
-                .build();
-
-        ApiResponseDTO<PagedResponseDTO<ProductResponseDTO>> response = ApiResponseDTO.<PagedResponseDTO<ProductResponseDTO>>builder()
+        ApiResponseDTO<PagedDataDTO<ProductResponseDTO>> response = ApiResponseDTO.<PagedDataDTO<ProductResponseDTO>>builder()
                 .timestamp(new Date())
                 .success(true)
                 .status(HttpStatus.OK.value())
                 .message("Filtered product list retrieved successfully")
-                .data(pagedResponse)
+                .data(new PagedDataDTO<>(productPage))
                 .build();
 
         return ResponseEntity.ok(response);

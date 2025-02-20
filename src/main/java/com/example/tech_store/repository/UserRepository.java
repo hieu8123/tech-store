@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String Email);
-    Optional<User> findById(UUID id);
     @Query("SELECT u.email FROM User u")
     List<String> findAllEmails();
 }

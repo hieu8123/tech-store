@@ -8,14 +8,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
 public class UserResponseDTO {
+    private UUID userId;
     private String email;
     private String username;
     private String phoneNumber;
@@ -31,6 +32,7 @@ public class UserResponseDTO {
 
     public static UserResponseDTO fromUser(User user) {
         return UserResponseDTO.builder()
+                .userId(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .phoneNumber(user.getPhoneNumber())

@@ -4,14 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum OrderStatus {
-    PENDING("pending"),
-    PROCESSING("processing"),
-    SHIPPED("shipped"),
-    DELIVERED("delivered"),
-    CANCELLED("cancelled"),
-    ONLINE_PAYMENT("online_payment"),
-    OFFLINE_PAYMENT("offline_payment"),
-    FAILED_PAYMENT("failed_payment");
+    PENDING("pending"),          // Đơn hàng đang chờ xác nhận
+    PROCESSING("processing"),    // Đang xử lý
+    SHIPPED("shipped"),          // Đã giao cho đơn vị vận chuyển
+    DELIVERED("delivered"),      // Đã giao hàng thành công
+    CANCELLED("cancelled");      // Đơn hàng bị hủy
 
     private final String value;
 

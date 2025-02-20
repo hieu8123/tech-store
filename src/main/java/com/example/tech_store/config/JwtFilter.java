@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
@@ -65,9 +66,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = authHeader.substring(7);
 
-        if (!jwtUtil.isTokenValidFormat(token)) {
-            System.out.println("Token is not valid");
-            throw new UnauthorizedException("Token format is invalid");
+        if (!jwtUtil.isTokenValid(token)) {
+            throw new UnauthorizedException("Invalid or expired token");
         }
         UUID userId = jwtUtil.extractUserId(token);
         if (!jwtUtil.validateToken(token, userId)) {

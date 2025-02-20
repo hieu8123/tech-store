@@ -3,7 +3,7 @@ package com.example.tech_store.controller;
 import com.example.tech_store.DTO.request.CategoryRequestDTO;
 import com.example.tech_store.DTO.response.ApiResponseDTO;
 import com.example.tech_store.DTO.response.CategoryResponseDTO;
-import com.example.tech_store.DTO.response.PagedResponseDTO;
+import com.example.tech_store.DTO.response.PagedDataDTO;
 import com.example.tech_store.constants.ApiConstants;
 import com.example.tech_store.enums.CategorySortField;
 import com.example.tech_store.enums.SortDirection;
@@ -33,7 +33,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponseDTO<PagedResponseDTO<CategoryResponseDTO>>> getAllCategories(
+    public ResponseEntity<ApiResponseDTO<PagedDataDTO<CategoryResponseDTO>>> getAllCategories(
             @RequestParam(defaultValue = "0") int offset,
             @RequestParam(defaultValue = "10") int size,
             @Parameter(description = "Sort by",
@@ -59,7 +59,7 @@ public class CategoryController {
         Pageable pageable = PageRequest.of(offset / size, size, sort);
         Page<CategoryResponseDTO> categoryPage = categoryService.getAllCategories(pageable);
 
-        PagedResponseDTO<CategoryResponseDTO> responseDTO = PagedResponseDTO.<CategoryResponseDTO>builder()
+        PagedDataDTO<CategoryResponseDTO> responseDTO = PagedDataDTO.<CategoryResponseDTO>builder()
                 .content(categoryPage.getContent())
                 .page(categoryPage.getNumber())
                 .size(categoryPage.getSize())
@@ -68,7 +68,7 @@ public class CategoryController {
                 .build();
 
         return ResponseEntity.ok(
-                ApiResponseDTO.<PagedResponseDTO<CategoryResponseDTO>>builder()
+                ApiResponseDTO.<PagedDataDTO<CategoryResponseDTO>>builder()
                         .timestamp(new Date())
                         .success(true)
                         .status(200)

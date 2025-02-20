@@ -1,5 +1,7 @@
 package com.example.tech_store.model;
 
+import com.example.tech_store.enums.PaymentMethod;
+import com.example.tech_store.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,25 +16,28 @@ import java.util.UUID;
 @Entity
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "cart_items")
-public class CartItem {
+@AllArgsConstructor
+@Table(name = "payments")
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart;
+    @OneToOne
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
+    private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
-
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private int quantity;
+    private PaymentMethod method;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus status = PaymentStatus.PENDING;
+
+    private String transactionId;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -41,5 +46,4 @@ public class CartItem {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-
 }

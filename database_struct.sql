@@ -2,6 +2,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- Drop all tables if they exist before recreating them
+DROP TABLE IF EXISTS payments;
 DROP TABLE IF EXISTS order_details;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS banners;
@@ -18,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
                                      id BINARY(16) PRIMARY KEY,
                                      email VARCHAR(255) UNIQUE NOT NULL,
                                      username VARCHAR(255),
-                                     password VARCHAR(255) ,
+                                     password VARCHAR(255),
                                      phone_number VARCHAR(20) UNIQUE,
                                      avatar TEXT,
                                      role VARCHAR(50) NOT NULL DEFAULT 'USER',
@@ -107,11 +108,21 @@ CREATE TABLE IF NOT EXISTS banners (
 CREATE TABLE IF NOT EXISTS orders (
                                       id BINARY(16) PRIMARY KEY,
                                       user_id BINARY(16) NOT NULL,
-                                      status VARCHAR(50) NOT NULL,
+                                      status VARCHAR(50) NOT NULL, -- OrderStatus ENUM: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
                                       note TEXT,
                                       total INT NOT NULL,
                                       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                       updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS payments (
+                                        id BINARY(16) PRIMARY KEY,
+                                        order_id BINARY(16) UNIQUE NOT NULL, -- Mỗi đơn hàng chỉ có một thanh toán
+                                        method VARCHAR(50) NOT NULL, -- PaymentMethod ENUM: CASH_ON_DELIVERY, CREDIT_CARD, PAYPAL, BANK_TRANSFER, MOMO, VNPAY
+                                        status VARCHAR(50) NOT NULL, -- PaymentStatus ENUM: PENDING, PAID, FAILED, REFUNDED
+                                        transaction_id VARCHAR(255) UNIQUE, -- Mã giao dịch từ cổng thanh toán (nếu có)
+                                        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS order_details (
@@ -137,3 +148,7 @@ ALTER TABLE cart_items ADD CONSTRAINT fk_cart_items_cart FOREIGN KEY (cart_id) R
 ALTER TABLE cart_items ADD CONSTRAINT fk_cart_items_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
 ALTER TABLE order_details ADD CONSTRAINT fk_order_details_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
 ALTER TABLE order_details ADD CONSTRAINT fk_order_details_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
+ALTER TABLE payments ADD CONSTRAINT fk_payments_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+
+-- Re-enable foreign key checks
+SET FOREIGN_KEY_CHECKS = 1;
