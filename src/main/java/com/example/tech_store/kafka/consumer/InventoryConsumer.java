@@ -13,10 +13,10 @@ public class InventoryConsumer {
     private final KafkaTemplate<String, InventoryEvent> kafkaTemplate;
     private final OrderService orderService;
 
-    @KafkaListener(topics = "order-topic", groupId = "inventory-group")
+    @KafkaListener(topics = "inventory-topic", groupId = "inventory-group")
     public void checkInventory(InventoryEvent inventoryEvent) {
         inventoryEvent.setAvailable(orderService.checkProductStock(inventoryEvent.getOrderId()));
-        kafkaTemplate.send("inventory-topic", inventoryEvent);
+        kafkaTemplate.send("payment-topic", inventoryEvent);
     }
 
 }

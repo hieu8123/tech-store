@@ -20,15 +20,15 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<ApiResponseDTO<Order>> createOrder(@RequestBody OrderRequestDTO orderRequest) {
-        Order order = orderService.createOrder(orderRequest);
-        return ResponseEntity.ok(ApiResponseDTO.<Order>
+    public ResponseEntity<ApiResponseDTO<String>> createOrder(@RequestBody OrderRequestDTO orderRequest) {
+        String paymentUrl = orderService.createOrder(orderRequest);
+        return ResponseEntity.ok(ApiResponseDTO.<String>
                 builder()
                 .success(true)
                 .message("order created")
                 .status(200)
                 .timestamp(new Date())
-                .data(order)
+                .data(paymentUrl)
                 .build());
     }
 }

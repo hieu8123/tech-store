@@ -14,6 +14,6 @@ public class OrderProducer {
 
     public void sendInventoryCheckEvent(UUID orderId) {
         InventoryEvent event = new InventoryEvent(orderId, true);
-        kafkaTemplate.send("order-topic", event);
+        kafkaTemplate.send("inventory-topic", event);
     }
 }

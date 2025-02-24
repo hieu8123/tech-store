@@ -16,11 +16,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class OrderEvent {
+    public static class OrderDetails{
+        UUID productId;
+        String productName;
+        int quantity;
+        int price;
+    }
     private UUID orderId;
     private UUID userId;
     private Integer total;
     private PaymentMethod paymentMethod;
     private PaymentStatus status;
+    private OrderDetails orderDetails;
 
     @JsonCreator
     public OrderEvent(

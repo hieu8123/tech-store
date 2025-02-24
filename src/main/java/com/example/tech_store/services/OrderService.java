@@ -7,6 +7,8 @@ import com.example.tech_store.exception.InvalidDataException;
 import com.example.tech_store.kafka.producer.OrderProducer;
 import com.example.tech_store.model.*;
 import com.example.tech_store.repository.*;
+import com.example.tech_store.services.payment.PaymentFactory;
+import com.example.tech_store.services.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +26,10 @@ public class OrderService {
     private final OrderProducer orderProducer;
     private final PaymentRepository paymentRepository;
     private final ProductRepository productRepository;
+    private final PaymentFactory paymentFactory;
 
     @Transactional
-    public Order createOrder(OrderRequestDTO orderRequest) {
+    public String createOrder(OrderRequestDTO orderRequest) {
         Order order = Order.builder()
                 .user(User.builder().id(orderRequest.getUserId()).build())
                 .status(OrderStatus.PENDING)
@@ -46,17 +49,11 @@ public class OrderService {
                 .collect(Collectors.toList());
         orderDetailRepository.saveAll(orderDetails);
 
-        // Tạo payment (chưa xử lý thanh toán)
-        Payment payment = Payment.builder()
-                .order(order)
-                .method(orderRequest.getPaymentMethod())
-                .status(PaymentStatus.PENDING)
-                .build();
-        paymentRepository.save(payment);
+        orderProducer.sendInventoryCheckEvent(savedOrder.getId());
 
-        orderProducer.sendInventoryCheckEvent(order.getId());
+        PaymentService paymentService = paymentFactory.getPaymentService(orderRequest.getPaymentMethod());
 
-        return order;
+        return paymentService.processPayment(order);
     }
 
     public boolean checkProductStock(UUID orderId) {

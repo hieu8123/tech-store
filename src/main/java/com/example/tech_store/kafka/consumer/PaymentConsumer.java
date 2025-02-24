@@ -16,16 +16,14 @@ public class PaymentConsumer {
     private final OrderService orderService;
 
 
-    @KafkaListener(topics = "inventory-topic", groupId = "payment-group")
+    @KafkaListener(topics = "payment-topic", groupId = "payment-group")
     public void processPayment(InventoryEvent inventoryEvent) {
         if (!inventoryEvent.isAvailable()) {
             orderService.cancelOrder(inventoryEvent.getOrderId());
             return;
         }
-//        PaymentStatus paymentStatus = paymentService.processPayment(inventoryEvent.getOrderId());
         PaymentStatus paymentStatus = PaymentStatus.PENDING;
         PaymentEvent paymentEvent = new PaymentEvent(inventoryEvent.getOrderId(), paymentStatus);
-        kafkaTemplate.send("payment-topic", paymentEvent);
     }
 }
 
