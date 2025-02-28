@@ -53,6 +53,10 @@ public class ApiConstants {
         public static final String PRODUCTS = BASE_API_PATH + "/products";
         public static final String ADMIN = BASE_API_PATH + "/admin";
 
+        public static final String[] PRIVATE_ENDPOINTS = {
+                BASE_API_PATH + "/private",
+                BASE_API_PATH + "/test/private",
+        };
 
 
         public static final Map<String, Map<HttpMethod, String[]>> ROLE_PERMISSIONS = Map.of(

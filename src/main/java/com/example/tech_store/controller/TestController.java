@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("/api/v1/test")
 public class TestController {
 
     @GetMapping("/public")
@@ -16,7 +16,6 @@ public class TestController {
 
 
     @GetMapping("/private")
-    @PreAuthorize("isAuthenticated()")
     public String privateEndpoint() {
         return "This is a private endpoint, accessible only with a valid JWT";
     }

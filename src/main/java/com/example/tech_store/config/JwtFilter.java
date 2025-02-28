@@ -85,9 +85,11 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         try {
             UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(null, token);
-            var authentication = authenticationManager.authenticate(authToken);
+                    new UsernamePasswordAuthenticationToken(null, token);  // ⚠ Không có quyền (Authorities)
+            var authentication = authenticationManager.authenticate(authToken);  // ⚠ authenticate có thể fail
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         } catch (AuthenticationException ex) {
             System.out.println(ex.getMessage());
             throw new UnauthorizedException("Authentication failed: " + ex.getMessage());

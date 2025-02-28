@@ -122,4 +122,6 @@ public class JwtUtil {
         String redisKey = userId.toString() + ":" + tokenId;
         redisTemplate.delete(redisKey);
     }
+
+
 }

@@ -4,6 +4,8 @@ EXPLAIN SELECT * FROM users ;
 
 SELECT * from products
 
+SELECT * FROM refresh_tokens
+
 SELECT *
 FROM payments
          INNER JOIN orders ON payments.order_id = orders.id
