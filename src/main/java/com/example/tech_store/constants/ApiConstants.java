@@ -54,6 +54,7 @@ public class ApiConstants {
         public static final String ADMIN = BASE_API_PATH + "/admin";
 
 
+
         public static final Map<String, Map<HttpMethod, String[]>> ROLE_PERMISSIONS = Map.of(
                 "ADMIN", Map.of(
                         HttpMethod.DELETE, new String[]{CATEGORIES, USERS, PRODUCTS,ADMIN},
