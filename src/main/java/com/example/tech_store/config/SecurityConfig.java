@@ -73,7 +73,7 @@ public class SecurityConfig {
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
                                 "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none';"
                         ))
-                        .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.valueOf("1; mode=block"))) // Chặn XSS
+                        .xssProtection(xss ->  xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED)) // Chặn XSS
                 )
                 .authorizeHttpRequests(auth -> {
                     ApiConstants.Endpoints.ROLE_PERMISSIONS.forEach((role, permissions) -> {
@@ -81,7 +81,7 @@ public class SecurityConfig {
                             auth.requestMatchers(method, endpoints).hasRole(role);
                         });
                     });
-                    auth.anyRequest().authenticated();
+                    auth.anyRequest().permitAll();
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
