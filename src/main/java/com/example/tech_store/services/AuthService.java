@@ -12,6 +12,7 @@ import com.example.tech_store.repository.UserRepository;
 import com.example.tech_store.utils.JwtUtil;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -35,23 +36,23 @@ public class AuthService {
         this.bloomFilterService = bloomFilterService;
     }
 
+    @Transactional
     public UserResponseDTO register(RegisterRequestDTO registerInfo) {
         try {
             registerInfo.setPassword(passwordEncoder.encode(registerInfo.getPassword()));
-            if(!bloomFilterService.mightContain(registerInfo.getEmail())) {
+            if (!bloomFilterService.mightContain(registerInfo.getEmail())) {
                 User user = registerInfo.toUser();
                 userRepository.save(user);
                 return generateAndSaveTokens(user);
             }
-            throw new InvalidDataException("Error registering user:Email already exists");
+            throw new InvalidDataException("Error registering user: Email already exists");
         } catch (Exception e) {
             throw new RuntimeException("Error registering user: " + e.getMessage());
         }
     }
 
     public UserResponseDTO login(LoginRequestDTO loginInfo) {
-
-        if(!bloomFilterService.mightContain(loginInfo.getEmail())) {
+        if (!bloomFilterService.mightContain(loginInfo.getEmail())) {
             throw new InvalidDataException("Email does not exist");
         }
         Optional<User> optionalUser = userRepository.findByEmail(loginInfo.getEmail());
@@ -85,30 +86,28 @@ public class AuthService {
         }
         UUID userId = jwtUtil.extractUserId(storedToken.get().getToken());
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        String accessToken =  jwtUtil.generateToken(user.getId(),user.getEmail(), false);
+        String accessToken = jwtUtil.generateToken(user.getId(), user.getEmail(), false);
         jwtUtil.saveTokenToRedis(accessToken, user.getId());
         return accessToken;
     }
 
+    // ✅ Cập nhật logout để xóa token khỏi Redis thay vì blacklist
     public void logout(String accessToken) {
         UUID userId = jwtUtil.extractUserId(accessToken);
         User user = userRepository.findById(userId).orElse(null);
-        if(user != null) {
-            if(user.getRefreshToken() != null) {
-                user.setRefreshToken(null);
-            }
-            jwtUtil.blacklistToken(accessToken);
+        if (user != null) {
+            jwtUtil.removeTokenFromRedis(accessToken, userId);
+            refreshTokenRepository.findByUserId(userId).ifPresent(refreshTokenRepository::delete);
         }
-
     }
 
     private UserResponseDTO generateAndSaveTokens(User user) {
-        String accessToken = jwtUtil.generateToken(user.getId(),user.getEmail(), false);
+        String accessToken = jwtUtil.generateToken(user.getId(), user.getEmail(), false);
 
         String refreshToken = refreshTokenRepository.findByUserId(user.getId())
                 .map(RefreshToken::getToken)
                 .orElseGet(() -> {
-                    String newRefreshToken = jwtUtil.generateToken(user.getId(),user.getEmail(),true);
+                    String newRefreshToken = jwtUtil.generateToken(user.getId(), user.getEmail(), true);
                     RefreshToken newToken = RefreshToken.builder()
                             .user(user)
                             .token(newRefreshToken)
@@ -119,11 +118,9 @@ public class AuthService {
 
         jwtUtil.saveTokenToRedis(accessToken, user.getId());
 
-        UserResponseDTO userResponseDTO= UserResponseDTO.fromUser(user);
+        UserResponseDTO userResponseDTO = UserResponseDTO.fromUser(user);
         userResponseDTO.setToken(accessToken);
         userResponseDTO.setRefreshToken(refreshToken);
         return userResponseDTO;
     }
-
 }
-

@@ -1,10 +1,6 @@
 package com.example.tech_store.utils;
-
-import jakarta.servlet.http.HttpServletRequest;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,13 +11,13 @@ public class VNPayUtil {
     public static String md5(String message) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] hash = md.digest(message.getBytes("UTF-8"));
+            byte[] hash = md.digest(message.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder(2 * hash.length);
             for (byte b : hash) {
                 sb.append(String.format("%02x", b & 0xff));
             }
             return sb.toString();
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException ex) {
             return "";
         }
     }
@@ -29,13 +25,13 @@ public class VNPayUtil {
     public static String sha256(String message) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(message.getBytes("UTF-8"));
+            byte[] hash = md.digest(message.getBytes(StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder(2 * hash.length);
             for (byte b : hash) {
                 sb.append(String.format("%02x", b & 0xff));
             }
             return sb.toString();
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException ex) {
             return "";
         }
     }
@@ -79,16 +75,4 @@ public class VNPayUtil {
         return hmacSHA512(hashSecret, sb.toString());
     }
 
-    public static String getIpAddress(HttpServletRequest request) {
-        String ipAddress;
-        try {
-            ipAddress = request.getHeader("X-FORWARDED-FOR");
-            if (ipAddress == null) {
-                ipAddress = request.getRemoteAddr();
-            }
-        } catch (Exception e) {
-            ipAddress = "Invalid IP:" + e.getMessage();
-        }
-        return ipAddress;
-    }
 }

@@ -8,5 +8,5 @@ import java.util.Map;
 
 public interface PaymentService {
     PaymentMethod getPaymentMethod();
-    String processPayment(Order order);
+    String processPayment(Order order, String clientIp);
 }

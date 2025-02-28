@@ -29,8 +29,6 @@ public class JwtUtil {
     @Value("${jwt.refresh_expiration}")
     private long refreshExpiration;
 
-    private static final String BLACKLIST_PREFIX = "TOKEN_BLACKLIST:";
-
     public JwtUtil(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
@@ -59,8 +57,8 @@ public class JwtUtil {
         return UUID.fromString(extractClaim(token, Claims::getSubject));
     }
 
-    public  String extractEmail(String token) {
-        if(!isTokenValid(token)){
+    public String extractEmail(String token) {
+        if (!isTokenValid(token)) {
             throw new UnauthorizedException("Invalid token");
         }
         return extractClaim(token, claims -> claims.get("email", String.class));
@@ -101,7 +99,7 @@ public class JwtUtil {
 
     // 📌 Kiểm tra token hợp lệ với userId
     public boolean validateToken(String token, UUID userId) {
-        if (isTokenBlacklisted(token) || !isTokenValid(token)) {
+        if (!isTokenValid(token)) {
             return false;
         }
         String tokenId = String.valueOf(extractClaim(token, Claims::getIssuedAt).getTime());
@@ -115,14 +113,13 @@ public class JwtUtil {
         return expirationDate.before(new Date());
     }
 
-    public void blacklistToken(String token) {
-        if (isTokenValid(token)) {
-            redisTemplate.opsForValue().set(BLACKLIST_PREFIX + token, "blacklisted", jwtExpiration, TimeUnit.MILLISECONDS);
+    // 📌 Xóa token khỏi Redis khi logout
+    public void removeTokenFromRedis(String token, UUID userId) {
+        if (!isTokenValid(token)) {
+            return;
         }
+        String tokenId = String.valueOf(extractClaim(token, Claims::getIssuedAt).getTime());
+        String redisKey = userId.toString() + ":" + tokenId;
+        redisTemplate.delete(redisKey);
     }
-
-    public boolean isTokenBlacklisted(String token) {
-        return redisTemplate.hasKey(BLACKLIST_PREFIX + token);
-    }
-
 }

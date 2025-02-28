@@ -21,7 +21,7 @@ public class CODService implements PaymentService {
     }
 
     @Override
-    public String processPayment(Order order) {
+    public String processPayment(Order order, String clientIp) {
         Payment payment = paymentRepository.findByOrderId(order.getId());
         payment.setStatus(PaymentStatus.PENDING);
         paymentRepository.save(payment);

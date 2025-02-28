@@ -10,6 +10,7 @@ import com.example.tech_store.repository.ProductRepository;
 import com.example.tech_store.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,7 @@ public class CartService {
                 .or(() -> Optional.of(createNewCartForUser(userId)));
     }
 
+
     private UserCartResponseDTO createNewCartForUser(UUID userId) {
         Cart newCart = Cart.builder()
                 .user(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")))
@@ -38,6 +40,7 @@ public class CartService {
         cartRepository.save(newCart);
         return UserCartResponseDTO.fromCart(newCart);
     }
+    @Transactional
     public Optional<UserCartResponseDTO> updateUserCart(UUID userId, CartRequestDTO cartRequest) {
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
             Cart newCart = new Cart();
@@ -63,6 +66,7 @@ public class CartService {
         return getUserCart(userId);
     }
 
+    @Transactional
     public void clearUserCart(UUID userId) {
         Cart cart = cartRepository.findByUserId(userId).orElseGet(() -> {
             Cart newCart = new Cart();

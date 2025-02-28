@@ -1,5 +1,9 @@
 package com.example.tech_store.constants;
 
+import org.springframework.http.HttpMethod;
+
+import java.util.Map;
+
 public class ApiConstants {
     public static final String BASE_URL = "/api";
 
@@ -49,15 +53,18 @@ public class ApiConstants {
         public static final String PRODUCTS = BASE_API_PATH + "/products";
         public static final String ADMIN = BASE_API_PATH + "/admin";
 
-        public static final String[] ADMIN_ENDPOINTS = {
-                "/api/admin/**",
-                "/api/test/admin/**"
-        };
 
-        public static final String[] PRIVATE_ENDPOINTS = {
-                "/api/private/**",
-                "/api/test/private/**"
-        };
+        public static final Map<String, Map<HttpMethod, String[]>> ROLE_PERMISSIONS = Map.of(
+                "ADMIN", Map.of(
+                        HttpMethod.DELETE, new String[]{CATEGORIES, USERS, PRODUCTS,ADMIN},
+                        HttpMethod.PUT, new String[]{CATEGORIES, USERS, PRODUCTS, ADMIN},
+                        HttpMethod.POST,new String[]{CATEGORIES, USERS, PRODUCTS, ADMIN},
+                        HttpMethod.GET, new String[]{USERS, ADMIN}
+                ),
+                "USER", Map.of(
+                        HttpMethod.GET, new String[]{USERS}
+                )
+        );
     }
 
     private ApiConstants() {

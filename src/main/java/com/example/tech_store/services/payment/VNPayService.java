@@ -29,7 +29,7 @@ public class VNPayService implements PaymentService {
     }
 
     @Override
-    public String processPayment(Order order) {
+    public String processPayment(Order order, String clientIp) {
         String txnRef = generateTxnRef();
 
         // VNPay yêu cầu số tiền tính theo VND * 100
@@ -46,7 +46,7 @@ public class VNPayService implements PaymentService {
         vnpParams.put("vnp_OrderType", "other");
         vnpParams.put("vnp_Locale", vnPayConfig.getLocale());
         vnpParams.put("vnp_ReturnUrl", vnPayConfig.getReturnUrl());
-        vnpParams.put("vnp_IpAddr", "127.0.0.1");
+        vnpParams.put("vnp_IpAddr", clientIp);
 
         // Thiết lập thời gian tạo và thời gian hết hạn giao dịch
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");

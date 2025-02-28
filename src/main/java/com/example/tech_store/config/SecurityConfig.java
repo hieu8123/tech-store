@@ -65,11 +65,14 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(ApiConstants.Endpoints.PRIVATE_ENDPOINTS).authenticated()
-                        .requestMatchers(ApiConstants.Endpoints.ADMIN_ENDPOINTS).hasRole("ADMIN")
-                        .anyRequest().permitAll()
-                )
+                .authorizeHttpRequests(auth -> {
+                    ApiConstants.Endpoints.ROLE_PERMISSIONS.forEach((role, permissions) -> {
+                        permissions.forEach((method, endpoints) -> {
+                            auth.requestMatchers(method, endpoints).hasRole(role);
+                        });
+                    });
+                    auth.anyRequest().authenticated();
+                })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo

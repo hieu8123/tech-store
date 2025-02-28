@@ -1,10 +1,8 @@
 package com.example.tech_store.DTO.request;
 
+import com.example.tech_store.enums.OrderStatus;
 import com.example.tech_store.enums.PaymentMethod;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
